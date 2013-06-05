@@ -27,8 +27,9 @@ RDEPEND="
 	!sys-cluster/dlm-kernel
 	!sys-cluster/dlm-lib"
 DEPEND="${RDEPEND}
-	>=sys-kernel/linux-headers-2.6.24"
-
+	>=sys-kernel/linux-headers-2.6.24
+	>=sys-cluster/corosync-2.3.0-r1
+	>=sys-apps/systemd-204"
 #S="${WORKDIR}/${MY_P}/dlm"
 S="${WORKDIR}/${MY_P}/dlm/libdlm"
 #/var/tmp/portage/sys-cluster/libdlm-9999/work/cluster-9999/dlm/libdlm
@@ -36,18 +37,20 @@ src_prepare() {
 #	sed -i \
 #		-e "s|/lib|/$(get_libdir)|g" \
 #"${WORKDIR}/${MY_P}/make/install.mk" || die "sed failed"
-	cd ${S}
-	make clean
+	cd ${S} || die
 }
 
 src_configure() {
-	echo 'nothing to do here'
+	make clean || die
 }
 
 src_compile() {
-	make all
+	make all || die
 }
 
 src_install() {
 	make install
+	mv "${D}"/$(get_libdir) "${D}"/lib
+	#doman man/libdlm.3
+	#dodoc doc/{libdlm.txt,example.c,user-dlm-overview.txt}
 }
